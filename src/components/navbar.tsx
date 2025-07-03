@@ -10,12 +10,14 @@ export default function Navbar() {
       </h1>
       <ul>
         <li className="inline-block mr-4">
-          <Button variant="outline" className="text-sm cursor-pointer">
-            Sign In
+          <Button className="lg:text-lg cursor-pointer text-white bg-[#5C6AC4]">
+            Sign Up
           </Button>
         </li>
         <li className="inline-block">
-          <Button className="text-sm cursor-pointer">Sign Up</Button>
+          <Button variant="outline" className="lg:text-lg cursor-pointer">
+            Sign In
+          </Button>
         </li>
       </ul>
     </nav>
