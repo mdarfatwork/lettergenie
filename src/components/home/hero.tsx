@@ -20,7 +20,7 @@ export default function Hero() {
               <Link href="/sign-up">
                 <Button
                   size="lg"
-                  className="bg-[#5C6AC4] hover:bg-[#4C5AA3] text-white px-8 py-3 text-lg font-medium rounded-lg transition-colors"
+                  className="bg-[#5C6AC4] hover:bg-[#4C5AA3] text-white px-8 py-3 text-lg font-medium rounded-lg transition-colors cursor-pointer"
                 >
                   Get Started
                 </Button>
@@ -29,7 +29,7 @@ export default function Hero() {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-3 text-lg font-medium rounded-lg transition-colors"
+                  className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-3 text-lg font-medium rounded-lg transition-colors cursor-pointer"
                 >
                   Sign In
                 </Button>
