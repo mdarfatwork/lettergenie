@@ -44,3 +44,5 @@ next-env.d.ts
 # husky
 .husky/
 .vercel
+
+/src/generated/prisma
