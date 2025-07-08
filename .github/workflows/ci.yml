@@ -5,12 +5,15 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup npm
-        uses: npm/action-setup@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18 # or your required version
 
       - name: Install dependencies
         run: npm install
@@ -19,7 +22,7 @@ jobs:
         run: find . -name ".env.local.example" -exec sh -c 'cp "$1" "${1%.example}"' _ {} \;
 
       - name: Typecheck
-        run: npm typecheck
+        run: npm run typecheck
 
       - name: Lint
-        run: npm lint
+        run: npm run lint
