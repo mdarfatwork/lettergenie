@@ -27,47 +27,55 @@ import {
   Linkedin,
   Briefcase,
   CalendarIcon,
-  UploadIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/lib/utils";
 import { Calendar } from "./ui/calendar";
 import { format } from "date-fns";
 import { ProfileFormData, profileSchema } from "@/lib/zod-schemas";
-import {
-  DropZoneArea,
-  Dropzone,
-  DropzoneMessage,
-  DropzoneTrigger,
-  useDropzone,
-} from "@/components/ui/dropzone";
 import { toast } from "sonner";
+import { addProfile } from "@/actions/profile.actions";
+import { useAction } from "next-safe-action/hooks";
+import z from "zod";
+
+type WorkExperience = NonNullable<z.infer<typeof profileSchema>['workExperience']>[number];
 
 interface ProfileFormProps {
   userEmail: string;
+  initialData?: Partial<ProfileFormData>;
 }
 
-export default function ProfileForm({ userEmail }: ProfileFormProps) {
+export default function ProfileForm({
+  userEmail,
+  initialData,
+}: ProfileFormProps) {
   const [newSkill, setNewSkill] = useState("");
   const [newAchievement, setNewAchievement] = useState("");
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      fullName: "",
-      phone: "",
-      location: "",
-      linkedinUrl: "",
-      websiteUrl: "",
-      githubUrl: "",
-      currentJobTitle: "",
-      yearsOfExperience: 0,
-      bio: "",
-      workExperience: [],
-      skills: [],
-      achievements: [],
-      resumeFile: undefined,
+      fullName: initialData?.fullName || "",
+      phone: initialData?.phone || "",
+      email: userEmail,
+      location: initialData?.location || "",
+      linkedinUrl: initialData?.linkedinUrl || "",
+      websiteUrl: initialData?.websiteUrl || "",
+      githubUrl: initialData?.githubUrl || "",
+      currentJobTitle: initialData?.currentJobTitle || "",
+      yearsOfExperience: initialData?.yearsOfExperience || 0,
+      bio: initialData?.bio || "",
+      workExperience:
+        initialData?.workExperience?.map((exp: WorkExperience) => ({
+          title: exp.title,
+          company: exp.company,
+          startDate: new Date(exp.startDate),
+          endDate: exp.endDate ? new Date(exp.endDate) : undefined,
+          summary: exp.summary,
+        })) || [],
+      skills: initialData?.skills || [],
+      achievements: initialData?.achievements || [],
     },
   });
 
@@ -80,26 +88,39 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
     name: "workExperience",
   });
 
-  const skills = form.watch("skills") || [];
-  const achievements = form.watch("achievements") || [];
+  const skills = useMemo(() => form.watch("skills") || [], [form]);
+  const achievements = useMemo(() => form.watch("achievements") || [], [form]);
 
-  const addSkill = () => {
+  const { execute, isExecuting } = useAction(addProfile, {
+    onSuccess: () => {
+      toast.success("Profile saved successfully!");
+    },
+    onError: (error) => {
+      toast.error("Failed to save profile");
+      console.error("Profile save error:", error);
+    },
+  });
+
+  const addSkill = useCallback(() => {
     if (newSkill.trim()) {
       const currentSkills = form.getValues("skills") || [];
       form.setValue("skills", [...currentSkills, newSkill.trim()]);
       setNewSkill("");
     }
-  };
+  }, [form, newSkill]);
 
-  const removeSkill = (index: number) => {
-    const currentSkills = form.getValues("skills") || [];
-    form.setValue(
-      "skills",
-      currentSkills.filter((_, i) => i !== index)
-    );
-  };
+  const removeSkill = useCallback(
+    (index: number) => {
+      const currentSkills = form.getValues("skills") || [];
+      form.setValue(
+        "skills",
+        currentSkills.filter((_, i) => i !== index)
+      );
+    },
+    [form]
+  );
 
-  const addAchievement = () => {
+  const addAchievement = useCallback(() => {
     if (newAchievement.trim()) {
       const currentAchievements = form.getValues("achievements") || [];
       form.setValue("achievements", [
@@ -108,39 +129,18 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
       ]);
       setNewAchievement("");
     }
-  };
+  }, [form, newAchievement]);
 
-  const removeAchievement = (index: number) => {
-    const currentAchievements = form.getValues("achievements") || [];
-    form.setValue(
-      "achievements",
-      currentAchievements.filter((_, i) => i !== index)
-    );
-  };
-
-  const onSubmit = (data: ProfileFormData) => {
-    console.log("Profile Data:", { ...data, email: userEmail });
-  };
-
-  // Dropzone setup for resume file upload
-  const dropzone = useDropzone({
-    onDropFile: async (file: File) => {
-      form.setValue("resumeFile", file);
-      toast.success("Receipt selected");
-      return { status: "success", result: file };
+  const removeAchievement = useCallback(
+    (index: number) => {
+      const currentAchievements = form.getValues("achievements") || [];
+      form.setValue(
+        "achievements",
+        currentAchievements.filter((_, i) => i !== index)
+      );
     },
-    validation: {
-      accept: {
-        "application/pdf": [".pdf"],
-        "application/msword": [".doc"],
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-          [".docx"],
-      },
-      maxSize: 2 * 1024 * 1024, // 2MB
-      maxFiles: 1,
-    },
-    shiftOnMaxFiles: true,
-  });
+    [form]
+  );
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
@@ -153,8 +153,7 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          {/* Personal Information */}
+        <form onSubmit={form.handleSubmit(execute)} className="space-y-8">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -171,7 +170,11 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                     <FormItem>
                       <FormLabel>Full Name *</FormLabel>
                       <FormControl>
-                        <Input placeholder="John Doe" {...field} />
+                        <Input
+                          placeholder="John Doe"
+                          {...field}
+                          disabled={isExecuting}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -187,7 +190,11 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                         Phone Number
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder="+1 (555) 123-4567" {...field} />
+                        <Input
+                          placeholder="+1 (555) 123-4567"
+                          {...field}
+                          disabled={isExecuting}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -204,7 +211,11 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                       Location
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="New York, NY" {...field} />
+                      <Input
+                        placeholder="New York, NY"
+                        {...field}
+                        disabled={isExecuting}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -235,6 +246,7 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                       <Input
                         placeholder="https://linkedin.com/in/johndoe"
                         {...field}
+                        disabled={isExecuting}
                       />
                     </FormControl>
                     <FormMessage />
@@ -252,7 +264,11 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                         Website URL
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder="https://johndoe.com" {...field} />
+                        <Input
+                          placeholder="https://johndoe.com"
+                          {...field}
+                          disabled={isExecuting}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -271,6 +287,7 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                         <Input
                           placeholder="https://github.com/johndoe"
                           {...field}
+                          disabled={isExecuting}
                         />
                       </FormControl>
                       <FormMessage />
@@ -298,7 +315,11 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                     <FormItem>
                       <FormLabel>Current Job Title</FormLabel>
                       <FormControl>
-                        <Input placeholder="Software Engineer" {...field} />
+                        <Input
+                          placeholder="Software Engineer"
+                          {...field}
+                          disabled={isExecuting}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -318,6 +339,7 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                           onChange={(e) =>
                             field.onChange(parseInt(e.target.value) || 0)
                           }
+                          disabled={isExecuting}
                         />
                       </FormControl>
                       <FormMessage />
@@ -336,6 +358,7 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                         placeholder="Brief description of your professional background and expertise..."
                         rows={4}
                         {...field}
+                        disabled={isExecuting}
                       />
                     </FormControl>
                     <FormMessage />
@@ -372,6 +395,7 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                       className="absolute top-2 right-2 text-red-500 hover:text-red-700"
                       onClick={() => removeWorkExperience(index)}
                       aria-label={`Remove work experience ${index + 1}`}
+                      disabled={isExecuting}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -384,7 +408,11 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                         <FormItem>
                           <FormLabel>Job Title *</FormLabel>
                           <FormControl>
-                            <Input placeholder="Software Engineer" {...field} />
+                            <Input
+                              placeholder="Software Engineer"
+                              {...field}
+                              disabled={isExecuting}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -397,7 +425,11 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                         <FormItem>
                           <FormLabel>Company *</FormLabel>
                           <FormControl>
-                            <Input placeholder="Tech Corp" {...field} />
+                            <Input
+                              placeholder="Tech Corp"
+                              {...field}
+                              disabled={isExecuting}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -486,7 +518,6 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                                   date > new Date() ||
                                   date < new Date("1900-01-01")
                                 }
-                                initialFocus
                               />
                             </PopoverContent>
                           </Popover>
@@ -506,6 +537,7 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                             placeholder="Describe your role, responsibilities, and achievements..."
                             rows={3}
                             {...field}
+                            disabled={isExecuting}
                           />
                         </FormControl>
                         <FormMessage />
@@ -527,6 +559,7 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                     summary: "",
                   })
                 }
+                disabled={isExecuting}
                 className="w-full"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -549,12 +582,14 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                   onKeyPress={(e) =>
                     e.key === "Enter" && (e.preventDefault(), addSkill())
                   }
+                  disabled={isExecuting}
                 />
                 <Button
                   type="button"
                   onClick={addSkill}
                   variant="outline"
                   aria-label="Add Skill"
+                  disabled={isExecuting}
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
@@ -573,6 +608,7 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                       aria-label={`remove skill ${skill}`}
                       className="ml-1 cursor-pointer hover:bg-red-600 hover:text-white"
                       tabIndex={-1}
+                      disabled={isExecuting}
                     >
                       <X className="h-3 w-3 " />
                     </Button>
@@ -598,15 +634,14 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
                   placeholder="Enter an achievement"
                   value={newAchievement}
                   onChange={(e) => setNewAchievement(e.target.value)}
-                  onKeyPress={(e) =>
-                    e.key === "Enter" && (e.preventDefault(), addAchievement())
-                  }
+                  disabled={isExecuting}
                 />
                 <Button
                   type="button"
                   onClick={addAchievement}
                   variant="outline"
                   aria-label="Add Achievement"
+                  disabled={isExecuting}
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
@@ -629,55 +664,11 @@ export default function ProfileForm({ userEmail }: ProfileFormProps) {
             </CardContent>
           </Card>
 
-          {/* Resume Upload */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Resume (Optional)</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <FormField
-                control={form.control}
-                name="resumeFile"
-                render={({ field }) => (
-                  <>
-                    {field.value ? (
-                      <p>{field.value.name}</p>
-                    ) : (
-                      <FormItem>
-                        <FormControl>
-                          <Dropzone value={dropzone}>
-                            <DropZoneArea className="border-0 p-0">
-                              <DropzoneTrigger className="flex w-full flex-col items-center justify-center gap-1 rounded-md border-2 border-dashed bg-transparent px-2 py-6 text-sm">
-                                <UploadIcon className="h-6 w-6 text-muted-foreground" />
-                                <p className="text-sm text-muted-foreground">
-                                  Drag & drop or{" "}
-                                  <span className="font-semibold text-blue-600">
-                                    choose a file
-                                  </span>{" "}
-                                  to upload
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  Only Pdf and Word files allowed &#40;max
-                                  2MB&#41;
-                                </p>
-                              </DropzoneTrigger>
-                            </DropZoneArea>
-                            <DropzoneMessage className="text-center" />
-                          </Dropzone>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  </>
-                )}
-              />
-            </CardContent>
-          </Card>
-
           <Button
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             size="lg"
+            disabled={isExecuting}
           >
             Save Profile
           </Button>

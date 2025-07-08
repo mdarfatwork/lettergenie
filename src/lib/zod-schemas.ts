@@ -1,9 +1,9 @@
-import { checkFileType } from "@/utils/check-file-type";
 import z from "zod";
 
 export const profileSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
   phone: z.string().optional(),
+  email: z.string().email("Please enter a valid email address"),
   location: z.string().optional(),
   linkedinUrl: z
     .string()
@@ -39,14 +39,6 @@ export const profileSchema = z.object({
     .optional(),
   skills: z.array(z.string()).min(1, "At least one skill is required"),
   achievements: z.array(z.string()).optional(),
-  resumeFile: z
-    .instanceof(File)
-    .optional()
-    .refine((file) => !file || file.size < 2_000_000, "Max size is 2MB.")
-    .refine(
-      (file) => !file || checkFileType(file),
-      "Only PDF and Word formats are allowed."
-    ),
 });
 
 export type ProfileFormData = z.infer<typeof profileSchema>;
