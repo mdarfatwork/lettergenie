@@ -1,4 +1,4 @@
-import ProfileForm from "@/components/profile-form";
+import ProfileForm from "@/components/profile/profile-form";
 import { Button } from "@/components/ui/button";
 import { SignOutButton } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";

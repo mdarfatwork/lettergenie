@@ -29,9 +29,9 @@ import {
   CalendarIcon,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
-import { Calendar } from "./ui/calendar";
+import { Calendar } from "../ui/calendar";
 import { format } from "date-fns";
 import { ProfileFormData, profileSchema } from "@/lib/zod-schemas";
 import { toast } from "sonner";
@@ -39,12 +39,16 @@ import { addProfile } from "@/actions/profile.actions";
 import { useAction } from "next-safe-action/hooks";
 import z from "zod";
 
-type WorkExperience = NonNullable<z.infer<typeof profileSchema>['workExperience']>[number];
+type WorkExperience = NonNullable<
+  z.infer<typeof profileSchema>["workExperience"]
+>[number];
 
 interface ProfileFormProps {
   userEmail: string;
   initialData?: Partial<ProfileFormData>;
 }
+
+const isDev = process.env.NODE_ENV === "development";
 
 export default function ProfileForm({
   userEmail,
@@ -56,16 +60,25 @@ export default function ProfileForm({
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      fullName: initialData?.fullName || "",
-      phone: initialData?.phone || "",
+      fullName: initialData?.fullName || (isDev ? "John Doe" : ""),
+      phone: initialData?.phone || (isDev ? "123-456-7890" : ""),
       email: userEmail,
-      location: initialData?.location || "",
-      linkedinUrl: initialData?.linkedinUrl || "",
-      websiteUrl: initialData?.websiteUrl || "",
-      githubUrl: initialData?.githubUrl || "",
-      currentJobTitle: initialData?.currentJobTitle || "",
-      yearsOfExperience: initialData?.yearsOfExperience || 0,
-      bio: initialData?.bio || "",
+      location: initialData?.location || (isDev ? "Mumbai, India" : ""),
+      linkedinUrl:
+        initialData?.linkedinUrl ||
+        (isDev ? "https://linkedin.com/in/johndoe" : ""),
+      websiteUrl:
+        initialData?.websiteUrl || (isDev ? "https://johndoe.dev" : ""),
+      githubUrl:
+        initialData?.githubUrl || (isDev ? "https://github.com/johndoe" : ""),
+      currentJobTitle:
+        initialData?.currentJobTitle || (isDev ? "Full Stack Developer" : ""),
+      yearsOfExperience: initialData?.yearsOfExperience || (isDev ? 3 : 0),
+      bio:
+        initialData?.bio ||
+        (isDev
+          ? "Passionate developer with 3+ years of experience building full-stack web apps."
+          : ""),
       workExperience:
         initialData?.workExperience?.map((exp: WorkExperience) => ({
           title: exp.title,
@@ -73,9 +86,24 @@ export default function ProfileForm({
           startDate: new Date(exp.startDate),
           endDate: exp.endDate ? new Date(exp.endDate) : undefined,
           summary: exp.summary,
-        })) || [],
-      skills: initialData?.skills || [],
-      achievements: initialData?.achievements || [],
+        })) ||
+        (isDev
+          ? [
+              {
+                title: "Frontend Developer",
+                company: "TechCorp",
+                startDate: new Date("2022-01-01"),
+                endDate: new Date("2023-12-31"),
+                summary: "Worked on building modern React applications.",
+              },
+            ]
+          : []),
+      skills:
+        initialData?.skills ||
+        (isDev ? ["React", "Next.js", "Node.js", "TypeScript"] : []),
+      achievements:
+        initialData?.achievements ||
+        (isDev ? ["Won Hackathon 2023", "Built a SaaS product"] : []),
     },
   });
 

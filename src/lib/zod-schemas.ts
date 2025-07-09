@@ -41,4 +41,12 @@ export const profileSchema = z.object({
   achievements: z.array(z.string()).optional(),
 });
 
+export const generateCoverLetterSchema = z.object({
+  jobTitle: z.string().min(2, "Job title must be at least 2 characters"),
+  companyName: z.string().min(2, "Company name must be at least 2 characters"),
+  jobDescription: z.string().min(10, "Job description must be at least 10 characters"),
+  customInstructions: z.string().optional(),
+});
+
 export type ProfileFormData = z.infer<typeof profileSchema>;
+export type GenerateCoverLetterFormData = z.infer<typeof generateCoverLetterSchema>;

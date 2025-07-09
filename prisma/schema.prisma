@@ -30,6 +30,7 @@ model UserProfile {
   resumeFileName    String? // Store original filename
   
   workExperience    WorkExperience[]
+  coverLetters      CoverLetter[]
   
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -52,4 +53,24 @@ model WorkExperience {
   updatedAt   DateTime @updatedAt
   
   @@map("work_experiences")
+}
+
+model CoverLetter {
+  id                  String   @id @default(cuid())
+  clerkId             String   // Clerk user ID for direct reference
+  profileId           String?  // Optional reference to UserProfile
+  profile             UserProfile? @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  jobDescription      String   @db.Text
+  customInstructions  String?  @db.Text
+  generatedLetter     String   @db.Text
+  
+  // Optional metadata
+  jobTitle            String?
+  companyName         String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  @@map("cover_letters")
 }
