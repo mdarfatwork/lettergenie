@@ -112,7 +112,7 @@ export default function CoverLetter({ coverLetter }: Props) {
             className={cn(
               "grid gap-6 mt-20 max-w-4xl mx-auto",
               coverLetter.length === 2 && "sm:grid-cols-2",
-              coverLetter.length === 3 && "sm:grid-cols-3"
+              coverLetter.length >= 3 && "sm:grid-cols-3"
             )}
           >
             {coverLetter.map((letter) => (

@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { CheckCircle, Copy, Download, Trash } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { deleteCoverLetter } from "@/actions/cover.actions";
+import { jsPDF } from "jspdf";
 
 interface ViewCoverLetterProps {
   letter: {
@@ -52,18 +53,22 @@ export default function ViewCoverLetter({ letter }: ViewCoverLetterProps) {
   };
 
   const handleDownload = () => {
-    const blob = new Blob([letter.generatedLetter], {
-      type: "text/plain",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `cover-letter-${letter.jobTitle || "untitled"}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    toast.success("Cover letter downloaded!");
+    try {
+      const doc = new jsPDF();
+
+      const lines = doc.splitTextToSize(letter.generatedLetter, 180);
+      doc.setFont("Times", "Normal");
+      doc.setFontSize(12);
+      doc.text(lines, 15, 20);
+
+      const fileName = `cover-letter-${letter.jobTitle || "untitled"}.pdf`;
+      doc.save(fileName);
+
+      toast.success("Cover letter downloaded as PDF!");
+    } catch (err) {
+      console.error("Failed to generate PDF:", err);
+      toast.error("Failed to download as PDF");
+    }
   };
 
   const { execute: executeDelete, isExecuting: isExecutingDelete } = useAction(
