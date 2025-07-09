@@ -48,5 +48,10 @@ export const generateCoverLetterSchema = z.object({
   customInstructions: z.string().optional(),
 });
 
+export const deleteCoverLetterSchema = z.object({
+  id: z.string(),
+});
+
 export type ProfileFormData = z.infer<typeof profileSchema>;
 export type GenerateCoverLetterFormData = z.infer<typeof generateCoverLetterSchema>;
+export type DeleteCoverLetterFormData = z.infer<typeof deleteCoverLetterSchema>;

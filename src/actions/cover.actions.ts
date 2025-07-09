@@ -1,6 +1,6 @@
 "use server";
 
-import { generateCoverLetterSchema } from "@/lib/zod-schemas";
+import { deleteCoverLetterSchema, generateCoverLetterSchema } from "@/lib/zod-schemas";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { actionClient } from "@/lib/safe-action";
@@ -136,5 +136,34 @@ Output only the cover letter content (no markdown, no explanations).
     } catch (error) {
       console.error("Error generating cover letter:", error);
       throw new Error("Failed to generate cover letter. Please try again.");
+    }
+  });
+
+export const deleteCoverLetter = actionClient
+  .inputSchema(deleteCoverLetterSchema)
+  .action(async ({ parsedInput }) => {
+    try {
+      const { id } = parsedInput;
+      const { userId } = await auth();
+      if (!userId) throw new Error("User not authenticated");
+
+      const existing = await db.coverLetter.findUnique({
+        where: { id },
+      });
+
+      if (!existing || existing.clerkId !== userId) {
+        throw new Error("Unauthorized or not found");
+      }
+
+      await db.coverLetter.delete({
+        where: { id },
+      });
+
+      revalidatePath("/cover");
+
+      return { success: true };
+    } catch (err) {
+      console.error("Error deleting cover letter:", err);
+      throw new Error("Failed to delete cover letter.");
     }
   });
