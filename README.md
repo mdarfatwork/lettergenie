@@ -1,36 +1,151 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📄 LetterGenie
 
-## Getting Started
+**LetterGenie** is a modern web application that helps users generate tailored cover letters using AI. Whether you're applying for your first job or pivoting careers, LetterGenie creates personalized, concise, and professional letters based on your input and profile.
 
-First, run the development server:
+Built using Next.js 15 and powered by Google Gemini, it simplifies the cover letter process while maintaining flexibility and customization.
+
+---
+
+## ✨ Features
+
+- 🧠 **AI-Powered Generation** using Google Gemini API
+- 🔐 **Secure Authentication** with Clerk
+- 📁 **Save, View, Download, and Delete** cover letters
+- ✍️ **Custom Instructions** to fine-tune tone or focus
+- 📄 **User Profile Management**
+- 📜 **Legal Pages**: Privacy Policy, Terms of Service, and Contact
+- 🌈 **Modern UI** using Tailwind CSS + shadcn
+
+---
+
+## 🧪 Test Credentials
+
+To explore the app without signing up, use the following dummy account:
+
+- **Email**: `jane+clerk_test@gmail.com`
+- **Password**: `Test@424242`
+
+> ✅ This account works in test mode with Clerk. Useful for demos and development.
+
+---
+
+## 🧱 Tech Stack
+
+| Category       | Technology                    |
+|----------------|-------------------------------|
+| Framework      | Next.js 15 (App Router)       |
+| Language       | TypeScript                    |
+| Styling        | Tailwind CSS, shadcn/ui       |
+| Forms          | React Hook Form + Zod         |
+| Auth           | Clerk                         |
+| Database       | PostgreSQL (via Neon)         |
+| ORM            | Prisma                        |
+| AI Integration | Google Gemini API             |
+| Actions        | next-safe-action              |
+| Notifications  | Sonner                        |
+
+---
+
+## ⚙️ Getting Started
+
+### 1. Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/mdarfatwork/lettergenie.git
+cd lettergenie
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Using npm:
+```bash
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Configure Environment Variables
 
-## Learn More
+Create a `.env` file and same as `.env.example`
 
-To learn more about Next.js, take a look at the following resources:
+Replace the placeholders with real values from Clerk, Neon, and Google AI Studio etc.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Run Local Dev Server
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm dev
+```
 
-## Deploy on Vercel
+Visit: [http://localhost:3000](http://localhost:3000)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🌐 Routes Overview
+
+### Public Routes (available to everyone)
+- `/contact` - Contact page
+- `/terms` - Terms of Service
+- `/privacy` - Privacy Policy
+
+### Non-Authenticated Routes (only for non-logged-in users)
+- `/` - Home page
+- `/sign-in` - Sign in page
+- `/sign-up` - Sign up page
+
+### Authenticated Routes (login required)
+- `/cover` - Cover letter generator
+- `/profile` - User profile management
+
+> These are protected using Clerk middleware in `middleware.ts`.
+
+---
+
+## 🚀 Deployment
+
+### Recommended: Vercel
+
+1. Push the project to GitHub
+2. Import into Vercel
+3. Set environment variables in the dashboard
+4. Deploy!
+
+### Also works with:
+- Railway
+- Netlify (with Next.js adapter)
+- Render (using custom serverless config)
+
+---
+
+## 🙋 FAQ
+
+### 🔐 Why Clerk?
+Clerk provides easy and secure auth with email/password, social logins, and user management—perfect for modern apps with minimal setup.
+
+### 🧠 Why Google Gemini?
+Google Gemini (via GenAI SDK) offers fast and high-quality text generation, suitable for professional writing use cases like cover letters.
+
+---
+
+## 📄 License
+
+MIT License
+
+You are free to use, modify, and distribute this project for personal or commercial purposes.
+
+---
+
+## 📬 Contact
+
+For suggestions or issues, please reach out via the Contact Page or create an issue on GitHub.
+
+---
+
+## 👨‍💻 Made by
+
+**Mohammed Arfat** – Full Stack Developer
+
+[LinkedIn](https://linkedin.com/in/momin-mohammed-arfat) • [Github](https://github.com/mdarfatwork))
+
+---
+
+<div align="center">
+  <p>⭐ Star this repository if you found it helpful!</p>
+</div>
