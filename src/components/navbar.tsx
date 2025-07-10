@@ -15,13 +15,25 @@ export default async function Navbar() {
       </Link>
       <ul>
         {user ? (
-          <li className="inline-block mr-4">
-            <Link href="/profile">
-              <Button className="lg:text-lg cursor-pointer text-white bg-[#5C6AC4]">
-                Profile
-              </Button>
-            </Link>
-          </li>
+          <>
+            <li className="inline-block mr-4">
+              <Link href="/cover">
+                <Button
+                  className="lg:text-lg cursor-pointer"
+                  variant="secondary"
+                >
+                  Cover
+                </Button>
+              </Link>
+            </li>
+            <li className="inline-block mr-4">
+              <Link href="/profile">
+                <Button className="lg:text-lg cursor-pointer text-white bg-[#5C6AC4]">
+                  Profile
+                </Button>
+              </Link>
+            </li>
+          </>
         ) : (
           <>
             <li className="inline-block mr-4">
