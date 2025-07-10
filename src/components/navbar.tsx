@@ -13,10 +13,10 @@ export default async function Navbar() {
           <span className="text-3xl font-semibold">LetterGenie</span>
         </h1>
       </Link>
-      <ul>
+      <ul className="flex flex-col md:flex-row items-center gap-4">
         {user ? (
           <>
-            <li className="inline-block mr-4">
+            <li>
               <Link href="/cover">
                 <Button
                   className="lg:text-lg cursor-pointer"
@@ -26,7 +26,7 @@ export default async function Navbar() {
                 </Button>
               </Link>
             </li>
-            <li className="inline-block mr-4">
+            <li>
               <Link href="/profile">
                 <Button className="lg:text-lg cursor-pointer text-white bg-[#5C6AC4]">
                   Profile
@@ -36,14 +36,14 @@ export default async function Navbar() {
           </>
         ) : (
           <>
-            <li className="inline-block mr-4">
+            <li>
               <Link href="/sign-up">
                 <Button className="lg:text-lg cursor-pointer text-white bg-[#5C6AC4]">
                   Sign Up
                 </Button>
               </Link>
             </li>
-            <li className="inline-block">
+            <li>
               <Link href="/sign-in">
                 <Button variant="outline" className="lg:text-lg cursor-pointer">
                   Sign In
