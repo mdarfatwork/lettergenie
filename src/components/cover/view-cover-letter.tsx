@@ -24,17 +24,14 @@ import { CheckCircle, Copy, Download, Trash } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { deleteCoverLetter } from "@/actions/cover.actions";
 import { jsPDF } from "jspdf";
+import type { CoverLetterData } from "@/lib/queries";
+import EditCoverLetter from "./edit-cover-letter";
 
-interface ViewCoverLetterProps {
-  letter: {
-    id: string;
-    jobTitle: string | null;
-    companyName: string | null;
-    generatedLetter: string;
-  };
+interface Props {
+  letter: NonNullable<CoverLetterData>[number];
 }
 
-export default function ViewCoverLetter({ letter }: ViewCoverLetterProps) {
+export default function ViewCoverLetter({ letter }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -135,7 +132,8 @@ export default function ViewCoverLetter({ letter }: ViewCoverLetterProps) {
           {letter.generatedLetter}
         </div>
 
-        <div className="flex justify-end pt-6">
+        <div className="flex justify-end gap-2 pt-6">
+          <EditCoverLetter letter={letter} />
           <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
             <AlertDialogTrigger asChild>
               <Button
