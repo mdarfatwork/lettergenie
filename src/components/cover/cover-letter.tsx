@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { CoverLetterData } from "@/lib/queries";
-import { cn } from "@/lib/utils";
 import ViewCoverLetter from "./view-cover-letter";
 import GenerateCoverLetter from "./generate-cover-letter";
 import { useSetAtom } from "jotai";
@@ -51,13 +50,7 @@ export default function CoverLetter({ coverLetter }: Props) {
             </Button>
           </div>
 
-          <div
-            className={cn(
-              "grid gap-6 mt-20 max-w-4xl mx-auto",
-              coverLetter.length === 2 && "sm:grid-cols-2",
-              coverLetter.length >= 3 && "sm:grid-cols-3"
-            )}
-          >
+          <div className="grid gap-6 mt-20 sm:grid-cols-2 lg:grid-cols-3">
             {coverLetter.map((letter) => (
               <Card key={letter.id}>
                 <CardHeader className="space-y-1">
