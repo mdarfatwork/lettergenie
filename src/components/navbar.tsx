@@ -10,7 +10,7 @@ export default async function Navbar() {
       <Link href="/">
         <h1 className="flex items-center gap-2">
           <NotepadText className="w-8 h-8 text-[#5C6AC4]" />
-          <span className="text-3xl font-semibold">LetterGenie</span>
+          <span className="text-2xl md:text-3xl font-semibold">LetterGenie</span>
         </h1>
       </Link>
       <ul className="flex flex-col md:flex-row items-center gap-4">
