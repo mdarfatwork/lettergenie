@@ -28,7 +28,7 @@ import {
   Briefcase,
   CalendarIcon,
 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Calendar } from "../ui/calendar";
@@ -116,8 +116,8 @@ export default function ProfileForm({
     name: "workExperience",
   });
 
-  const skills = useMemo(() => form.watch("skills") || [], [form]);
-  const achievements = useMemo(() => form.watch("achievements") || [], [form]);
+  const skills = form.watch("skills") || [];
+  const achievements = form.watch("achievements") || [];
 
   const { execute, isExecuting } = useAction(addProfile, {
     onSuccess: () => {
@@ -129,26 +129,23 @@ export default function ProfileForm({
     },
   });
 
-  const addSkill = useCallback(() => {
+  const addSkill = () => {
     if (newSkill.trim()) {
       const currentSkills = form.getValues("skills") || [];
       form.setValue("skills", [...currentSkills, newSkill.trim()]);
       setNewSkill("");
     }
-  }, [form, newSkill]);
+  };
 
-  const removeSkill = useCallback(
-    (index: number) => {
-      const currentSkills = form.getValues("skills") || [];
-      form.setValue(
-        "skills",
-        currentSkills.filter((_, i) => i !== index)
-      );
-    },
-    [form]
-  );
+  const removeSkill = (index: number) => {
+    const currentSkills = form.getValues("skills") || [];
+    form.setValue(
+      "skills",
+      currentSkills.filter((_, i) => i !== index)
+    );
+  };
 
-  const addAchievement = useCallback(() => {
+  const addAchievement = () => {
     if (newAchievement.trim()) {
       const currentAchievements = form.getValues("achievements") || [];
       form.setValue("achievements", [
@@ -157,23 +154,22 @@ export default function ProfileForm({
       ]);
       setNewAchievement("");
     }
-  }, [form, newAchievement]);
+  };
 
-  const removeAchievement = useCallback(
-    (index: number) => {
-      const currentAchievements = form.getValues("achievements") || [];
-      form.setValue(
-        "achievements",
-        currentAchievements.filter((_, i) => i !== index)
-      );
-    },
-    [form]
-  );
+  const removeAchievement = (index: number) => {
+    const currentAchievements = form.getValues("achievements") || [];
+    form.setValue(
+      "achievements",
+      currentAchievements.filter((_, i) => i !== index)
+    );
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       <div className="text-center space-y-2">
-        <h1 className="text-2xl md:text-3xl font-bold">Complete Your Profile</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">
+          Complete Your Profile
+        </h1>
         <p className="text-sm md:text-base text-muted-foreground">
           Help us create better cover letters by providing your professional
           details
