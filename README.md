@@ -142,7 +142,7 @@ For suggestions or issues, please reach out via the Contact Page or create an is
 
 **Mohammed Arfat** – Full Stack Developer
 
-[LinkedIn](https://linkedin.com/in/momin-mohammed-arfat) • [Github](https://github.com/mdarfatwork))
+[LinkedIn](https://linkedin.com/in/momin-mohammed-arfat) • [Github](https://github.com/mdarfatwork)
 
 ---
 
