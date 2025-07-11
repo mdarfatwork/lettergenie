@@ -82,7 +82,7 @@ export default function EditCoverLetter({ letter }: Props) {
           Edit Cover Letter
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[70vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Cover Letter</DialogTitle>
         </DialogHeader>
