@@ -64,9 +64,32 @@ npm install
 
 ### 3. Configure Environment Variables
 
-Create a `.env` file and same as `.env.example`
+Create a `.env` file in your project root and copy the contents from `.env.example`.
 
-Replace the placeholders with real values from Clerk, Neon, and Google AI Studio etc.
+Replace the placeholders with your actual API keys and configuration values:
+
+#### 🔐 **Authentication - Clerk**
+Get your Clerk keys from: [https://clerk.com/](https://clerk.com/)
+- Sign up for a free account
+- Create a new application
+- Navigate to **API Keys** in your dashboard
+- Copy your `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`
+
+#### 🗄️ **Database - Neon**
+Get your database URL from: [https://neon.tech/](https://neon.tech/)
+- Create a free account
+- Create a new project
+- Go to **Connection Details**
+- Copy the `DATABASE_URL` (PostgreSQL connection string)
+
+#### 🤖 **AI Integration - Google AI Studio**
+Get your Gemini API key from: [https://aistudio.google.com/](https://aistudio.google.com/)
+- Sign in with your Google account
+- Click **Get API Key** in the left sidebar
+- Create a new API key
+- Copy your `GOOGLE_GENERATIVE_AI_API_KEY`
+
+> ⚠️ **Important**: Never commit your `.env` file to version control. It's already included in `.gitignore` for security.
 
 ### 4. Run Local Dev Server
 
